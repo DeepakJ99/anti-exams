@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index file</title>
+</head>
+<body>
+        <button id = "choose" onclick = "choose(1)">Choose Upload</button>
+        <button id = "choose" onclick = "choose(2)">Choose Live</button>
+        
+        <div id = "browse" style = "display:none">
+            <input type = "file" name = "imgUploader" multiple>
+        </div>
+        <div id = "screenshot" style = "display:none">
+            <video autoplay></video>
+            <img src="" download>
+            <canvas style="display:none;"></canvas>
+            <div class="capture-button">Click to start capturing</div>
+            <div id = "screenshot-button">Take a screenshot</div>
+        </div>
+        <button id="submit-photo"> SUBMIT</button>
+        <p id = "log" style = "background-color:blue;width:100vw;color:white;font-size:13px"></p>
+        <p id = "actResult" style = "background-color:green;width:500px;color:white"></p>
+        <p id = "result" style = "background-color:red;width:500px;color:white"></p>
+        
+</body>
+<script src = "jquery.min.js"></script>
+<script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+<script>
+const recognize = function(src){
+    Tesseract.recognize(
+        src,
+        'eng',
+        { logger: (m) => {
+            document.getElementById('log').innerText+=JSON.stringify(m); }
+        }).then(({ data: { text } }) => {
+            document.getElementById('actResult').innerText+=text;
+        }).catch((e)=>{
+            document.getElementById('result').innerText+=e;
+        })
+}
+
+const readasurl = function(){
+    const input = document.querySelector('input[type="file"]');
+    var reader = new FileReader();
+    reader.readAsDataURL(input.files[0]);
+    var me = this;
+    
+    reader.onload = function(){
+        document.querySelector('#submit-photo').addEventListener('click',()=>{
+            recognize(reader.result)
+                })
+        
+    } 
+}
+
+   
+const readLive = function(){
+    
+        function hasGetUserMedia() {
+            return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);   
+        }
+
+        if (hasGetUserMedia()) {
+            const constraints = {video: true};
+            function handleError(error) {
+                console.error('Error: ', error);
+            }
+            const captureVideoButton = document.querySelector('#screenshot .capture-button');
+            const screenshotButton = document.querySelector('#screenshot-button');
+            const img = document.querySelector('#screenshot img');
+            const video = document.querySelector('#screenshot video');
+
+            const canvas = document.createElement('canvas');
+
+            captureVideoButton.onclick = function() {
+                navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
+            };
+
+            screenshotButton.onclick = video.onclick = function() {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0); 
+                img.src = canvas.toDataURL('image/jpeg');
+                document.querySelector('#submit-photo').addEventListener('click',()=>{
+                    recognize(canvas.toDataURL('image/jpeg'));
+                })
+                
+            };
+
+            function handleSuccess(stream) {
+                screenshotButton.disabled = false;
+                video.srcObject = stream;
+            }
+        } 
+        else {
+                alert('getUserMedia() is not supported by your browser');
+        }
+    }
+
+    // 
+    // fetch('/api/Upload',{
+    //     method: 'POST',
+    //     body: formData
+    // }).then((response)=>response.json()
+    // ).then((result)=>{
+    //     console.log('Success:',result);
+    // }).catch((error)=>{
+    //     console.log('Error'  + error);
+    // });
+function choose(e){
+    if(e==1){
+        document.getElementById('browse').style.display = "block";
+        readasurl();
+    }
+    else{
+        document.getElementById('screenshot').style.display = "block";
+        readLive();
+    }
+
+}
+
+</script>
+</html>
