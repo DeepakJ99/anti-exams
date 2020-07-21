@@ -1,0 +1,28 @@
+{
+  "name": "exams",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jquery.min.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "tesseract.js": "^2.0.0-beta.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start" : "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeepakJ99/anti-exams.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DeepakJ99/anti-exams/issues"
+  },
+  "homepage": "https://github.com/DeepakJ99/anti-exams#readme"
+}
